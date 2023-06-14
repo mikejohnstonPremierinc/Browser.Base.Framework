@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Configurations>QA;Debug;Release;UAT;Prod;DEV;CFPCUAT;TA;AT;Perf</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Browser.Base.Framework" Version="1.7.2" />
+    <PackageReference Include="EPPlus" Version="4.5.3.3" />
+    <PackageReference Include="log4net" Version="2.0.13" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+    <PackageReference Include="MySql.Data" Version="8.0.28" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="NUnit" Version="3.13.3" />
+    <PackageReference Include="NunitXml.TestLogger" Version="2.1.41" />
+    <PackageReference Include="Selenium.Support" Version="4.8.2" />
+    <PackageReference Include="Selenium.WebDriver" Version="4.8.2" />
+
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Browser.Base.Framework\Browser.Base.Framework.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,61 @@
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- main
+
+pr: none
+
+pool: "Premier Windows Agents"
+
+variables:
+  solution: 'Browser.Base.Framework/Browser.Base.Framework.csproj'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'QA'
+
+steps:
+
+- task: NuGetToolInstaller@1
+  displayName: NuGetTool Install
+
+- powershell: nuget locals all -clear
+  displayName: Delete NuGet Cache
+  
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: $(solution)
+    feedsToUse: 'config'
+    includeNuGetOrg: false
+    nugetConfigPath: $(SYSTEM_NUGET_CONFIG)
+
+- task: VSBuild@1
+  inputs:
+    solution: $(solution)
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+
+- task: VSTest@2
+  displayName: testrun
+  continueOnError: true
+  inputs:    
+    platform: '$(buildPlatform)'
+    searchFolder: '$(System.DefaultWorkingDirectory)' 
+    testFiltercriteria: 'Category=QuickTest & Category=Remote.chrome'
+    runInParallel: false
+    codeCoverageEnabled: true
+    diagnosticsEnabled: true
+    testAssemblyVer2: |
+      **\*test.dll
+      !**\*TestAdapter.dll
+      !**\obj\**
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'push'
+    packagesToPush: 'Browser.Base.Framework/**/*.nupkg;!Browser.Base.Framework/**/*.symbols.nupkg'
+    nuGetFeedType: 'external'
+    publishFeedCredentials: 'Nexus_Nuget-PQA'
